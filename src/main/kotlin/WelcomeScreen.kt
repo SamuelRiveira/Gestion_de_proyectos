@@ -94,49 +94,81 @@ class WelcomeScreen: Screen{
             }
 
             item {
-                Box(modifier = Modifier.height(500.dp)) {
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(3),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-                        items(list) { item ->
-                            Column(
+                Card(
+                    elevation = 8.dp,
+                    modifier = Modifier.padding(16.dp)
+                ){
+                    Column {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().height(50.dp),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            /*
+                            https://www.jetpackcompose.pro/buttons/icon-button/
+                            */
+                            Image(
+                                painter = painterResource("filtro.png"),
+                                contentDescription = "Perfil",
                                 modifier = Modifier
-                                    .padding(32.dp)
-                                    .fillMaxWidth()
-                                    .wrapContentWidth(Alignment.CenterHorizontally)
-                            ) {
-                                Card(
-                                    elevation = 8.dp,
+                                    .padding(8.dp)
+                                    .padding(end = 24.dp)
+                                    .clickable {
+
+                                    }
+                            )
+                        }
+                        Row {
+                            Box(modifier = Modifier.height(430.dp)) {
+                                LazyVerticalGrid(
+                                    columns = GridCells.Fixed(3),
                                     modifier = Modifier
-                                        .height(150.dp)
-                                        .width(200.dp),
-                                    backgroundColor = Color(0xFF8ab3cf)
+                                        .fillMaxWidth()
                                 ) {
-                                    Column(modifier = Modifier.padding(16.dp)) {
-                                        Text(
-                                            text = item,
-                                            color = Color.White,
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 18.sp,
-                                            modifier = Modifier.padding(bottom = 8.dp)
-                                        )
-                                        Text(
-                                            text = "Descripción",
-                                            color = Color(gris_clarito)
-                                        )
+                                    items(list) { item ->
+                                        Column(
+                                            modifier = Modifier
+                                                .padding(32.dp)
+                                                .fillMaxWidth()
+                                                .wrapContentWidth(Alignment.CenterHorizontally)
+                                                .wrapContentHeight(Alignment.CenterVertically)
+                                        ) {
+                                            Card(
+                                                elevation = 8.dp,
+                                                modifier = Modifier
+                                                    .height(150.dp)
+                                                    .width(200.dp)
+                                                    .clickable {
+                                                        navigator?.push(ProyectoScreen(item))
+                                                    },
+                                                backgroundColor = Color(0xFF8ab3cf)
+                                            ) {
+                                                Column(modifier = Modifier.padding(16.dp)) {
+                                                    Text(
+                                                        text = item,
+                                                        color = Color.White,
+                                                        fontWeight = FontWeight.Bold,
+                                                        fontSize = 18.sp,
+                                                        modifier = Modifier.padding(bottom = 8.dp)
+                                                    )
+                                                    Text(
+                                                        text = "Descripción",
+                                                        color = Color(gris_clarito)
+                                                    )
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
+
                     }
                 }
             }
 
             item {
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 32.dp),
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 32.dp, top = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
