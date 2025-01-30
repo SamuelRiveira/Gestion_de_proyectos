@@ -7,57 +7,64 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
 
-
-@Composable
-fun LoginScreen(onLoginSuccess: () -> Unit){
-    var text by remember { mutableStateOf("") }
-    Column(
-        modifier = Modifier.fillMaxSize().background(Color(0xFF8ab3cf)),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Card(
-            elevation = 16.dp
+class LoginScreen: Screen{
+    @Composable
+    override fun Content(){
+        val navigator = LocalNavigator.current
+        var usuario by remember { mutableStateOf("") }
+        var contraseña by remember { mutableStateOf("") }
+        Column(
+            modifier = Modifier.fillMaxSize().background(Color(0xFF8ab3cf)),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                modifier = Modifier.padding(36.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+            Card(
+                elevation = 16.dp
             ) {
-                Text(
-                    text = "Login",
-                    modifier = Modifier.padding(bottom = 24.dp),
-                    fontSize = 36.sp
-                )
-                OutlinedTextField(
-                    value = text,
-                    onValueChange = { text = it },
-                    label = { Text("Usuario") },
-                    modifier = Modifier.padding(bottom = 24.dp),
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = Color(0xFF4180ab),
-                        focusedLabelColor = Color(0xFF4180ab)
-                    )
-                )
-                OutlinedTextField(
-                    value = text,
-                    onValueChange = { text = it },
-                    label = { Text("Contraseña")},
-                    modifier = Modifier.padding(bottom = 24.dp),
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = Color(0xFF4180ab),
-                        focusedLabelColor = Color(0xFF4180ab)
-                    )
-                )
-                Button(
-                    onClick = {onLoginSuccess()},
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF4180ab))
-                ){
+                Column(
+                    modifier = Modifier.padding(36.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Text(
-                        text = "Iniciar sesión",
-                        color = Color.White
+                        text = "Login",
+                        modifier = Modifier.padding(bottom = 24.dp),
+                        fontSize = 36.sp
                     )
+                    OutlinedTextField(
+                        value = usuario,
+                        onValueChange = { usuario = it },
+                        label = { Text("Usuario") },
+                        modifier = Modifier.padding(bottom = 24.dp),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = Color(0xFF4180ab),
+                            focusedLabelColor = Color(0xFF4180ab)
+                        )
+                    )
+                    OutlinedTextField(
+                        value = contraseña,
+                        onValueChange = { contraseña = it },
+                        label = { Text("Contraseña")},
+                        modifier = Modifier.padding(bottom = 24.dp),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = Color(0xFF4180ab),
+                            focusedLabelColor = Color(0xFF4180ab)
+                        )
+                    )
+                    Button(
+                        onClick = {
+                            navigator?.push(WelcomeScreen())
+                        },
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF4180ab))
+                    ){
+                        Text(
+                            text = "Iniciar sesión",
+                            color = Color.White
+                        )
+                    }
                 }
             }
         }
