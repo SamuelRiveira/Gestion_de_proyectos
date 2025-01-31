@@ -3,10 +3,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -25,6 +25,8 @@ class WelcomeScreen: Screen{
     override fun Content(){
         val navigator = LocalNavigator.current
         val list = listOf("Proyecto 1", "Proyecto 2", "Proyecto 3", "Proyecto 4", "Proyecto 5", "Proyecto 6")
+
+        var checked by remember { mutableStateOf(false) }
 
         val gris_clarito = 0xFFe4ebf0
         val lightskyblue = 0xFF87cefa
@@ -66,7 +68,7 @@ class WelcomeScreen: Screen{
 
             item {
                 Row {
-                    Saludar(lightskyblue, gris_clarito)
+                    Saludar(lightskyblue)
                 }
             }
 
@@ -100,22 +102,29 @@ class WelcomeScreen: Screen{
                 ){
                     Column {
                         Row(
-                            modifier = Modifier.fillMaxWidth().height(50.dp),
-                            horizontalArrangement = Arrangement.End
+                            modifier = Modifier.fillMaxWidth().height(60.dp),
+                            horizontalArrangement = Arrangement.End,
+                            verticalAlignment = Alignment.Bottom
                         ) {
                             /*
                             https://www.jetpackcompose.pro/buttons/icon-button/
                             */
-                            Image(
-                                painter = painterResource("filtro.png"),
-                                contentDescription = "Perfil",
-                                modifier = Modifier
-                                    .padding(8.dp)
-                                    .padding(end = 24.dp)
-                                    .clickable {
 
-                                    }
-                            )
+                            IconToggleButton(
+                                checked = checked,
+                                onCheckedChange = { checked = it },
+                                modifier = Modifier.padding(end = 30.dp, top = 14.dp)
+                            ) {
+                                Image(
+                                    painter = painterResource(
+                                        if (checked) "boton_desactivado.png"
+                                        else "boton_activado.png"
+                                    ),
+                                    contentDescription =
+                                    if (checked) "Añadir a marcadores"
+                                    else "Quitar de marcadores"
+                                )
+                            }
                         }
                         Row {
                             Box(modifier = Modifier.height(430.dp)) {
@@ -124,7 +133,7 @@ class WelcomeScreen: Screen{
                                     modifier = Modifier
                                         .fillMaxWidth()
                                 ) {
-                                    items(list) { item ->
+                                    itemsIndexed(list) { index, item ->
                                         Column(
                                             modifier = Modifier
                                                 .padding(32.dp)
@@ -138,7 +147,7 @@ class WelcomeScreen: Screen{
                                                     .height(150.dp)
                                                     .width(200.dp)
                                                     .clickable {
-                                                        navigator?.push(ProyectoScreen(item))
+                                                        navigator?.push(ProyectoScreen(index.toString()))
                                                     },
                                                 backgroundColor = Color(0xFF8ab3cf)
                                             ) {
@@ -188,16 +197,23 @@ class WelcomeScreen: Screen{
                     Divider(modifier = Modifier.padding(start = 16.dp, end = 16.dp))
                 }
             }
-
+            /*
+            HISTORIAL
+            */
             item {
                 Box(modifier = Modifier.height(500.dp)) {
                     Card(
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier.padding(16.dp),
+                        elevation = 4.dp
                     ) {
                         LazyColumn {
-                            items(list) { item ->
+                            itemsIndexed(list) { index, item ->
+                                var paridad = 0xFFffffff
+                                if ((index % 2) != 0){
+                                    paridad = 0xFFbdd1de
+                                }
                                 Row(
-                                    modifier = Modifier.height(50.dp).fillMaxWidth(),
+                                    modifier = Modifier.height(50.dp).fillMaxWidth().background(Color(paridad)),
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
@@ -220,7 +236,7 @@ class WelcomeScreen: Screen{
     }
 
     @Composable
-    fun Saludar(lightskyblue: Long, gris_clarito: Long) {
+    fun Saludar(lightskyblue: Long) {
         val nombre = "Samu"
         Row(
             modifier = Modifier.padding(top = 128.dp, bottom = 128.dp).fillMaxWidth(),
