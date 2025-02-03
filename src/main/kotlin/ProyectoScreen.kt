@@ -1,3 +1,6 @@
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -9,6 +12,7 @@ import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -17,6 +21,7 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
@@ -191,7 +196,8 @@ class ProyectoScreen(item: String) : Screen {
             item {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.padding(bottom = 16.dp)
                 ) {
                     Text(
                         text = "Sin asignar",
@@ -209,6 +215,62 @@ class ProyectoScreen(item: String) : Screen {
                     )
                     Divider(modifier = Modifier.padding(start = 8.dp, end = 8.dp))
                 }
+            }
+            item {
+                Column(
+                    verticalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Tarjeta("Tareas sin asignar")
+                    Tarjeta("Programadores sin asignar")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun Tarjeta(texto: String = ""){
+    var expanded by rememberSaveable { mutableStateOf(0.dp) }
+    var isExpanded by remember { mutableStateOf(false) }
+    val animationPadding by
+    animateDpAsState(
+        if (isExpanded) 48.dp else 0.dp,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow                )
+    )
+    val currentPadding = animationPadding.coerceAtLeast(0.dp)
+    Card(
+        modifier = Modifier.padding(16.dp).fillMaxWidth(),
+        backgroundColor = Color(0xFF8ab3cf),
+        elevation = 2.dp,
+        shape = MaterialTheme.shapes.small,
+    ){
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = currentPadding)
+        ) {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = texto,
+                color = Color.White
+            )
+            Button(
+                onClick = {
+                    if (isExpanded) {
+                        expanded = 0.dp
+                        isExpanded = !isExpanded
+                    } else{
+                        expanded = 120.dp
+                        isExpanded = !isExpanded
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFbdd1de))
+            ){
+                Text(
+                    text = (if (isExpanded) "Mostrar menos" else "Mostrar más"),
+                    color = Color.White
+                )
             }
         }
     }
