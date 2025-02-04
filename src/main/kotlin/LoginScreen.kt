@@ -9,13 +9,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
+import model.User
+import network.apiLogIn
 
 class LoginScreen: Screen{
     @Composable
     override fun Content(){
         val navigator = LocalNavigator.current
-        var usuario by remember { mutableStateOf("") }
-        var contraseña by remember { mutableStateOf("") }
+        var userName by remember { mutableStateOf("") }
+        var password by remember { mutableStateOf("") }
+        var user: User by remember { mutableStateOf(User(0, 0, "", "")) }
         Column(
             modifier = Modifier.fillMaxSize().background(Color(0xFF8ab3cf)),
             verticalArrangement = Arrangement.Center,
@@ -35,8 +38,8 @@ class LoginScreen: Screen{
                         fontSize = 36.sp
                     )
                     OutlinedTextField(
-                        value = usuario,
-                        onValueChange = { usuario = it },
+                        value = userName,
+                        onValueChange = { userName = it },
                         label = { Text("Usuario") },
                         modifier = Modifier.padding(bottom = 24.dp),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -45,8 +48,8 @@ class LoginScreen: Screen{
                         )
                     )
                     OutlinedTextField(
-                        value = contraseña,
-                        onValueChange = { contraseña = it },
+                        value = password,
+                        onValueChange = { password = it },
                         label = { Text("Contraseña")},
                         modifier = Modifier.padding(bottom = 24.dp),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -56,7 +59,14 @@ class LoginScreen: Screen{
                     )
                     Button(
                         onClick = {
-                            navigator?.push(WelcomeScreen())
+                            if (!userName.isEmpty() && !password.isEmpty()){
+                                apiLogIn(userName, password){
+                                    user = it
+                                    if(!user.nombre.isEmpty()){
+                                        navigator?.push(WelcomeScreen(user))
+                                    }
+                                }
+                            }
                         },
                         colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF4180ab))
                     ){
