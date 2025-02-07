@@ -19,14 +19,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
+import model.Proyecto
 import model.User
+import network.ObtenerHistorial
+import network.ObtenerProyectosActivos
 
-class WelcomeScreen(user: User) : Screen{
+class WelcomeScreen(user: User) : Screen {
 
     val user = user
 
     @Composable
-    override fun Content(){
+    override fun Content() {
         val navigator = LocalNavigator.current
         val list = listOf("Proyecto 1", "Proyecto 2", "Proyecto 3", "Proyecto 4", "Proyecto 5", "Proyecto 6")
 
@@ -35,10 +38,20 @@ class WelcomeScreen(user: User) : Screen{
         val gris_clarito = 0xFFe4ebf0
         val lightskyblue = 0xFF87cefa
 
+        var historialProyecto by remember { mutableStateOf(emptyList<Proyecto>()) }
+        var proyectosActivos by remember { mutableStateOf(emptyList<Proyecto>()) }
+
+        ObtenerHistorial {
+            historialProyecto = it
+        }
+        ObtenerProyectosActivos{
+            proyectosActivos = it
+        }
+
         LazyColumn(
             modifier = Modifier.background(Color(gris_clarito)).fillMaxSize()
         ) {
-            item{
+            item {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.End,
@@ -64,7 +77,7 @@ class WelcomeScreen(user: User) : Screen{
                             text = "Desconectar",
                             fontSize = 14.sp,
                             color = Color.Blue,
-                            modifier = Modifier.clickable{navigator?.pop()}
+                            modifier = Modifier.clickable { navigator?.pop() }
                         )
                     }
                 }
@@ -103,7 +116,7 @@ class WelcomeScreen(user: User) : Screen{
                 Card(
                     elevation = 8.dp,
                     modifier = Modifier.padding(16.dp)
-                ){
+                ) {
                     Column {
                         Row(
                             modifier = Modifier.fillMaxWidth().height(60.dp),
@@ -131,13 +144,13 @@ class WelcomeScreen(user: User) : Screen{
                             }
                         }
                         Row {
-                            Box(modifier = Modifier.height(430.dp)) {
+                            Box(modifier = Modifier.height(250.dp)) {
                                 LazyVerticalGrid(
                                     columns = GridCells.Fixed(3),
                                     modifier = Modifier
                                         .fillMaxWidth()
                                 ) {
-                                    itemsIndexed(list) { index, item ->
+                                    itemsIndexed(proyectosActivos) { index, item ->
                                         Column(
                                             modifier = Modifier
                                                 .padding(32.dp)
@@ -151,22 +164,29 @@ class WelcomeScreen(user: User) : Screen{
                                                     .height(150.dp)
                                                     .width(200.dp)
                                                     .clickable {
-                                                        navigator?.push(ProyectoScreen(index.toString()))
+                                                        navigator?.push(ProyectoScreen(item))
                                                     },
                                                 backgroundColor = Color(0xFF8ab3cf)
                                             ) {
                                                 Column(modifier = Modifier.padding(16.dp)) {
                                                     Text(
-                                                        text = item,
+                                                        text = "${item.nombre}",
                                                         color = Color.White,
                                                         fontWeight = FontWeight.Bold,
                                                         fontSize = 18.sp,
                                                         modifier = Modifier.padding(bottom = 8.dp)
                                                     )
-                                                    Text(
-                                                        text = "Descripción",
-                                                        color = Color(gris_clarito)
-                                                    )
+                                                    if(item.fecha_finalizacion == null){
+                                                        Text(
+                                                            text = "Sin fecha de finalización asignada",
+                                                            color = Color(gris_clarito)
+                                                        )
+                                                    } else{
+                                                        Text(
+                                                            text = "${item.fecha_finalizacion}",
+                                                            color = Color(gris_clarito)
+                                                        )
+                                                    }
                                                 }
                                             }
                                         }
@@ -205,32 +225,34 @@ class WelcomeScreen(user: User) : Screen{
             HISTORIAL
             */
             item {
-                Box(modifier = Modifier.height(500.dp)) {
+                Box(modifier = Modifier.height(200.dp)) {
                     Card(
                         modifier = Modifier.padding(16.dp),
                         elevation = 4.dp
                     ) {
-                        LazyColumn {
-                            itemsIndexed(list) { index, item ->
-                                var paridad = 0xFFffffff
-                                if ((index % 2) != 0){
-                                    paridad = 0xFFbdd1de
+                        if (historialProyecto.isNotEmpty()) {
+                            LazyColumn {
+                                itemsIndexed(historialProyecto) { index, item ->
+                                    var paridad = 0xFFffffff
+                                    if ((index % 2) != 0) {
+                                        paridad = 0xFFbdd1de
+                                    }
+                                    Row(
+                                        modifier = Modifier.height(50.dp).fillMaxWidth().background(Color(paridad)),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = "${item.nombre}",
+                                            modifier = Modifier.padding(start = 8.dp)
+                                        )
+                                        Text(
+                                            text = "${item.fecha_finalizacion}",
+                                            modifier = Modifier.padding(end = 8.dp)
+                                        )
+                                    }
+                                    Divider()
                                 }
-                                Row(
-                                    modifier = Modifier.height(50.dp).fillMaxWidth().background(Color(paridad)),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(
-                                        text = item,
-                                        modifier = Modifier.padding(start = 8.dp)
-                                    )
-                                    Text(
-                                        text = "Fecha: dd/mm/aa",
-                                        modifier = Modifier.padding(end = 8.dp)
-                                    )
-                                }
-                                Divider()
                             }
                         }
                     }
