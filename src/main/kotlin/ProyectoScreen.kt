@@ -50,7 +50,7 @@ class ProyectoScreen(item: Proyecto) : Screen {
         ) {
             item {
                 Text(
-                    text = "Proyecto ${proyecto.nombre}",
+                    text = "${proyecto.nombre}",
                     modifier = Modifier.padding(start = 16.dp, bottom = 32.dp),
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
