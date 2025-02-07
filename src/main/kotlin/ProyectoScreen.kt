@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -25,7 +24,6 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import model.Proyecto
-import network.ObtenerProyectosGestor
 
 
 class ProyectoScreen(item: Proyecto) : Screen {
@@ -36,10 +34,10 @@ class ProyectoScreen(item: Proyecto) : Screen {
     override fun Content(){
 
         val navigator = LocalNavigator.current
-
-        val datos = listOf("nombre", "descripcion", "fecha de creación", "fecha de inicio", "fecha de finalización", "cliente")
         val tareas = listOf("Tarea 1", "Tarea 2", "Tarea 3", "Tarea 4", "Tarea 5", "Tarea 6")
 
+        var paridad by remember { mutableStateOf(0xFFffffff) }
+        var fila by remember { mutableStateOf(0) }
         var checked by remember { mutableStateOf(false) }
 
         val gris_clarito = 0xFFe4ebf0
@@ -91,31 +89,80 @@ class ProyectoScreen(item: Proyecto) : Screen {
                     modifier = Modifier.padding(16.dp),
                     elevation = 4.dp
                 ) {
-                    Box(modifier = Modifier.height(300.dp)) {
-                        LazyColumn {
-                            itemsIndexed(datos) { index, item ->
-                                var paridad = 0xFFffffff
-                                if ((index % 2) != 0) {
-                                    paridad = 0xFFbdd1de
-                                }
-                                Row(
-                                    modifier = Modifier.height(50.dp).fillMaxWidth().background(Color(paridad)),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(
-                                        text = item,
-                                        modifier = Modifier.padding(start = 8.dp)
-                                    )
-                                    Text(
-                                        text = "Fecha: dd/mm/aa",
-                                        modifier = Modifier.padding(end = 8.dp)
-                                    )
-                                }
-                                Divider()
-                            }
+                    if ((fila % 2) != 0) {
+                        paridad = 0xFFbdd1de
+                    } else{
+                        paridad = 0xFFffffff
+                    }
+                    Column {
+                        Row(
+                            modifier = Modifier.height(50.dp).fillMaxWidth().background(Color(paridad)),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "Nombre: ${proyecto.nombre}",
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                            fila ++
+                        }
+                        Row(
+                            modifier = Modifier.height(50.dp).fillMaxWidth().background(Color(paridad)),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "Descripción: ${proyecto.descripcion}",
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                            fila ++
+                        }
+                        Row(
+                            modifier = Modifier.height(50.dp).fillMaxWidth().background(Color(paridad)),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "Cliente: ${proyecto.cliente}",
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                            fila ++
+                        }
+                        Row(
+                            modifier = Modifier.height(50.dp).fillMaxWidth().background(Color(paridad)),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "Fecha de creación: ${proyecto.fecha_creacion}",
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                            fila ++
+                        }
+                        Row(
+                            modifier = Modifier.height(50.dp).fillMaxWidth().background(Color(paridad)),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "Fecha de inicio: ${proyecto.fecha_inicio}",
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                            fila ++
+                        }
+                        Row(
+                            modifier = Modifier.height(50.dp).fillMaxWidth().background(Color(paridad)),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "Fecha de finalización: ${proyecto.fecha_finalizacion}",
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                            fila ++
                         }
                     }
+                    Divider()
                 }
             }
             item {
