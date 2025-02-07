@@ -25,11 +25,12 @@ import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import model.Proyecto
+import network.ObtenerProyectosGestor
 
 
 class ProyectoScreen(item: Proyecto) : Screen {
 
-    val idProyectoTemporal = item
+    val proyecto = item
 
     @Composable
     override fun Content(){
@@ -49,7 +50,7 @@ class ProyectoScreen(item: Proyecto) : Screen {
         ) {
             item {
                 Text(
-                    text = "Proyecto ${idProyectoTemporal.toInt() + 1}",
+                    text = "Proyecto ${proyecto.nombre}",
                     modifier = Modifier.padding(start = 16.dp, bottom = 32.dp),
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,

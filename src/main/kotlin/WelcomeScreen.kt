@@ -3,6 +3,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
@@ -23,6 +24,7 @@ import model.Proyecto
 import model.User
 import network.ObtenerHistorial
 import network.ObtenerProyectosActivos
+import network.ObtenerProyectosGestor
 
 class WelcomeScreen(user: User) : Screen {
 
@@ -40,12 +42,17 @@ class WelcomeScreen(user: User) : Screen {
 
         var historialProyecto by remember { mutableStateOf(emptyList<Proyecto>()) }
         var proyectosActivos by remember { mutableStateOf(emptyList<Proyecto>()) }
+        var proyectoGestor by remember { mutableStateOf(emptyList<Proyecto>()) }
+        var mostrarProyectos by remember { mutableStateOf(emptyList<Proyecto>()) }
 
         ObtenerHistorial {
             historialProyecto = it
         }
         ObtenerProyectosActivos{
             proyectosActivos = it
+        }
+        ObtenerProyectosGestor(user.idGestor){
+            proyectoGestor = it
         }
 
         LazyColumn(
@@ -95,7 +102,7 @@ class WelcomeScreen(user: User) : Screen {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Proyectos activos",
+                        text = "Proyectos",
                         modifier = Modifier.padding(start = 16.dp),
                         fontSize = 32.sp,
                         fontWeight = FontWeight.Bold,
@@ -150,7 +157,12 @@ class WelcomeScreen(user: User) : Screen {
                                     modifier = Modifier
                                         .fillMaxWidth()
                                 ) {
-                                    itemsIndexed(proyectosActivos) { index, item ->
+                                    if (checked){
+                                        mostrarProyectos = proyectosActivos
+                                    } else{
+                                        mostrarProyectos = proyectoGestor
+                                    }
+                                    items(mostrarProyectos) { item ->
                                         Column(
                                             modifier = Modifier
                                                 .padding(32.dp)
