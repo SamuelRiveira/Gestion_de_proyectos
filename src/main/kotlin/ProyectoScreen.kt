@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -18,12 +17,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
+import model.Programador
 import model.Proyecto
+import network.ObtenerProgramadoresSinAsignar
 
 
 class ProyectoScreen(item: Proyecto) : Screen {
@@ -35,6 +35,8 @@ class ProyectoScreen(item: Proyecto) : Screen {
 
         val navigator = LocalNavigator.current
         val tareas = listOf("Tarea 1", "Tarea 2", "Tarea 3", "Tarea 4", "Tarea 5", "Tarea 6")
+
+        var programador_sin_asignar by remember { mutableStateOf(emptyList<Programador>()) }
 
         var paridad by remember { mutableStateOf(0xFFffffff) }
         var fila by remember { mutableStateOf(0) }
@@ -267,8 +269,10 @@ class ProyectoScreen(item: Proyecto) : Screen {
                 Column(
                     verticalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    Tarjeta("Tareas sin asignar")
-                    Tarjeta("Programadores sin asignar")
+//                    Tarjeta("Tareas sin asignar")
+                    ObtenerProgramadoresSinAsignar { programador_sin_asignar = it }
+                    Tarjeta(programador_sin_asignar)
+
                 }
             }
         }
@@ -276,46 +280,60 @@ class ProyectoScreen(item: Proyecto) : Screen {
 }
 
 @Composable
-fun Tarjeta(texto: String = ""){
-    var expanded by rememberSaveable { mutableStateOf(0.dp) }
+fun Tarjeta(programadores: List<Programador>) {
+
     var isExpanded by remember { mutableStateOf(false) }
-    val animationPadding by
-    animateDpAsState(
-        if (isExpanded) 48.dp else 0.dp,
+    val animationPadding by animateDpAsState(
+        targetValue = if (isExpanded) 48.dp else 0.dp,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessLow                )
+            stiffness = Spring.StiffnessLow
+        )
     )
-    val currentPadding = animationPadding.coerceAtLeast(0.dp)
+
     Card(
         modifier = Modifier.padding(16.dp).fillMaxWidth(),
         backgroundColor = Color(0xFF8ab3cf),
         elevation = 2.dp,
         shape = MaterialTheme.shapes.small,
-    ){
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = currentPadding)
-        ) {
+    ) {
+        Column(modifier = Modifier.padding(8.dp)) {
             Text(
-                modifier = Modifier.weight(1f),
-                text = texto,
-                color = Color.White
+                text = "Programadores sin asignar",
+                color = Color.White,
+                style = MaterialTheme.typography.h6
             )
-            Button(
-                onClick = {
-                    if (isExpanded) {
-                        expanded = 0.dp
-                        isExpanded = !isExpanded
-                    } else{
-                        expanded = 120.dp
-                        isExpanded = !isExpanded
+
+            if (isExpanded) {
+                Column(modifier = Modifier.padding(top = animationPadding)) {
+                    programadores.forEach { programador ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth().padding(4.dp)
+                        ) {
+                            Text(
+                                modifier = Modifier.weight(1f),
+                                text = "id del programador: ${programador.idProgramador}, sueldo por hora: ${programador.sueldo_hora}, id del empleado: ${programador.id_empleado}",
+                                color = Color.White
+                            )
+                            Button(
+                                onClick = { /* Acción para asignar el programador */ },
+                                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFbdd1de))
+                            ) {
+                                Text("Asignar", color = Color.White)
+                            }
+                        }
                     }
-                },
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFbdd1de))
-            ){
+                }
+            }
+
+            Button(
+                onClick = { isExpanded = !isExpanded },
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFbdd1de)),
+                modifier = Modifier.align(Alignment.End).padding(top = 8.dp)
+            ) {
                 Text(
-                    text = (if (isExpanded) "Mostrar menos" else "Mostrar más"),
+                    text = if (isExpanded) "Mostrar menos" else "Mostrar más",
                     color = Color.White
                 )
             }
