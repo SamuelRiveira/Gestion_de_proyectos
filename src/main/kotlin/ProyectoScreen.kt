@@ -23,7 +23,10 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import model.Programador
 import model.Proyecto
+import model.Tarea
 import network.ObtenerProgramadoresSinAsignar
+import network.ObtenerProyectosGestor
+import network.ObtenerTareasProyecto
 
 
 class ProyectoScreen(item: Proyecto) : Screen {
@@ -37,6 +40,9 @@ class ProyectoScreen(item: Proyecto) : Screen {
         val tareas = listOf("Tarea 1", "Tarea 2", "Tarea 3", "Tarea 4", "Tarea 5", "Tarea 6")
 
         var programador_sin_asignar by remember { mutableStateOf(emptyList<Programador>()) }
+        var tarea by remember { mutableStateOf(emptyList<Tarea>()) }
+
+        ObtenerTareasProyecto(proyecto.id) { tarea = it }
 
         var paridad by remember { mutableStateOf(0xFFffffff) }
         var fila by remember { mutableStateOf(0) }
@@ -202,7 +208,7 @@ class ProyectoScreen(item: Proyecto) : Screen {
                                     modifier = Modifier
                                         .fillMaxWidth()
                                 ) {
-                                    itemsIndexed(tareas) { index, item ->
+                                    itemsIndexed(tarea) { index, item ->
                                         Column(
                                             modifier = Modifier
                                                 .padding(32.dp)
@@ -222,7 +228,7 @@ class ProyectoScreen(item: Proyecto) : Screen {
                                             ) {
                                                 Column(modifier = Modifier.padding(16.dp)) {
                                                     Text(
-                                                        text = item,
+                                                        text = "${item.nombre}",
                                                         color = Color.White,
                                                         fontWeight = FontWeight.Bold,
                                                         fontSize = 18.sp,
