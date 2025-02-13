@@ -25,7 +25,6 @@ import model.Programador
 import model.Proyecto
 import model.Tarea
 import network.ObtenerProgramadoresSinAsignar
-import network.ObtenerProyectosGestor
 import network.ObtenerTareasProyecto
 
 
@@ -222,7 +221,7 @@ class ProyectoScreen(item: Proyecto) : Screen {
                                                     .height(150.dp)
                                                     .width(200.dp)
                                                     .clickable {
-                                                        navigator?.push(TareaScreen(index.toString()))
+                                                        navigator?.push(TareaScreen(item))
                                                     },
                                                 backgroundColor = Color(0xFF8ab3cf)
                                             ) {
